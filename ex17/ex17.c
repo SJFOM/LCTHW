@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <string.h>
 
+// A reliable way to create constants.
 
 #define MAX_DATA 512
 #define MAX_ROWS 100
@@ -17,22 +18,40 @@ struct Address {
 };
 
 struct Database {
+
+	/* A struct of fixed size. Database represents an array of Address structs
+	of length MAX_ROWS. This is pretty inefficient if the Database isn't going
+	to ever be that big but allows for the entire Database to be created later
+	on in Database_write in one simple move - nice! */
 	struct Address rows[MAX_ROWS];
 };
 
 struct Connection {
+
+	/* FILE is a special type of struct that comes as part of the standard
+	C library.  */
+
 	FILE *file;
 	struct Database *db;
 };
 
 void die(const char *message)
 {
+
+	/* Usually when you have en error return from a function it will produce an
+	error number 'errno' which details the problem. The function 'perror' prints
+	the actual error details. The else portion just prints the user-defined error
+	message passed to the 'die' function if no explicit errno exists.*/
 	if(errno) {
 		perror(message);
 	} else {
 		printf("ERROR: %s\n", message);
 	}
 
+
+	/* void _exit(int status)
+	The value of 'status' is returned to the parent process as the process' exit
+	status - i.e. it's reason for exiting. */
 	exit(1);
 }
 
@@ -44,18 +63,51 @@ void Address_print(struct Address *addr)
 
 void Database_load(struct Connection *conn)
 {
+	/* size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream); 
+
+	function fread reads 'nmemb' elements of data, each 'size' bytes long,
+	from the stream pointed to by 'stream' and eventually storing them at
+	the location pointed to by 'ptr'. 
+
+	RETURN VALUE: The number of items read.
+
+	In this case, 1 element 'sizeof(struct Database)' bytes long is read
+	from the file associated with the current Connection struct and is 
+	then stored in the database associated with the same Connection struct.
+
+	rc = 1 is the expected case as you load the entire (single, 1) database 
+	everytime you call upon Database_load. Note: Database_get handles this
+	differently. */
+
 	int rc = fread(conn->db, sizeof(struct Database), 1, conn->file);
 	if(rc != 1) die("Failed to load database.");
 }
 
 
+/* The 'const' keyword is used here for optimisation purposes. You know that
+the name of the file (filename) isn't going to change (or at least you never
+want it to change) while you're working on it in this program so it is safe
+to assume that it can be constant. 
+
+This allows the compiler to not have to worry about allocating or freeing 
+space on the stack (?) and offers some small optimisation. */
+
 struct Connection *Database_open(const char *filename, char mode)
 {
+
+	// Allocate space for the Connection struct - contains FILE and Database.
 	struct Connection *conn = malloc(sizeof(struct Connection));
+	/* Catches any malloc errors - could also use: assert(conn != NULL); but
+	this simple if statement is already part of the stdio header file. */
 	if(!conn) die("Memory error");
+
 
 	conn->db = malloc(sizeof(struct Database));
 	if(!conn->db) die("Memory error");
+
+	printf("sizeof(struct Connection): %ld\n", sizeof(struct Connection));
+	printf("sizeof(struct Database): %ld\n", sizeof(struct Database));
+
 
 	if(mode == 'c') {
 		conn->file = fopen(filename, "w");
