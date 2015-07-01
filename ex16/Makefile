@@ -5,3 +5,5 @@ all: $(TARGET)
 
 clean:
 	rm -r $(TARGET) *.dSYM
+
+.PHONY: all clean
