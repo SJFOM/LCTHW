@@ -39,9 +39,14 @@ void die(const char *message)
 {
 
 	/* Usually when you have en error return from a function it will produce an
-	error number 'errno' which details the problem. The function 'perror' prints
-	the actual error details. The else portion just prints the user-defined error
-	message passed to the 'die' function if no explicit errno exists.*/
+	error number 'errno' for that  problem. The function 'perror' prints some
+	extra info about the error given a valid errno. The else portion just prints
+	the user-defined error message passed to the 'die' function if no explicit
+	errno exists.
+
+	UPDATE: perror(message) prints "message:details about error" where the details
+	are taken from errno. message here could simply be an empty string ("") but
+	errno may not always exist so it is good practice to give one anyway.*/
 	if(errno) {
 		perror(message);
 	} else {
@@ -66,7 +71,7 @@ void Database_load(struct Connection *conn)
 	/* size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream); 
 
 	function fread reads 'nmemb' elements of data, each 'size' bytes long,
-	from the stream pointed to by 'stream' and eventually storing them at
+	from the stream pointed to by 'stream' and eventually stores them at
 	the location pointed to by 'ptr'. 
 
 	RETURN VALUE: The number of items read.
@@ -84,6 +89,7 @@ void Database_load(struct Connection *conn)
 }
 
 
+
 /* The 'const' keyword is used here for optimisation purposes. You know that
 the name of the file (filename) isn't going to change (or at least you never
 want it to change) while you're working on it in this program so it is safe
@@ -95,7 +101,8 @@ space on the stack (?) and offers some small optimisation. */
 struct Connection *Database_open(const char *filename, char mode)
 {
 
-	/*  Allocate space for the Connection struct - contains FILE and Database. 
+	/*  Allocate space for a pointer to the Connection struct: contains pointers
+	to FILE and Database structs. 
 	At this point in the program, Connection only contains two pointers, each
 	8 bytes in size - hence, *conn occupies 16 bytes.*/
 	struct Connection *conn = malloc(sizeof(struct Connection)); 
@@ -107,39 +114,76 @@ struct Connection *Database_open(const char *filename, char mode)
 	/* conn has had space made for it (16 bytes) but the actual database is
         of much larger size - it's 512 (MAX_DATA) repeated rows of the Address
         struct irrespective of the size of the actual Database - be it only 2 
-        or 3 entries. */
+        or 3 entries, hence why this program is not considered efficient. */
         conn->db = malloc(sizeof(struct Database));
         if(!conn->db) die("Memory error");
 
+	/*
+	Some test code to prove that Database is of expected byte size.
         printf("sizeof(struct Connection): %ld\n", sizeof(struct Connection));
         printf("sizeof(struct Database): %ld\n", sizeof(struct Database));
 	
 	printf("Database = (2 ints & 2 char[MAX_ROWS])*MAX_DATA bytes: %d\n", (2*4+2*1*512)*100);
+	*/
 
 
+	// mode 'c' is for creating a new database file (not a new entry - see 's' functionality).
         if(mode == 'c') {
+		/* Recall that Database_open is called every time this program is run (in int main).
+		Because of this, a special check must be done in the case that a new database is
+		being created or whether an already existing one is being used.
+
+		FILE *fopen(const char *path, const char *mode)
+		Here, the 'w' mode is set to create a text file of name 'filename' for writing to.
+		The text 'stream' is positioned at the start of the file. */
         	conn->file = fopen(filename, "w");
         } else {
+
+		/* If any mode other than 'c' is called by the user, the default is to call fopen
+		with full read and write priveledges as per the 'r+' keyword.
+
+		NOTE: if filename does not already exist then the fopen call with the 'r+' keyword
+		will return a NULL pointer. This does not mean the program will crash all by itself
+		if this happens so a check for the pointer conn->file!=NULL is necessary. */
         	conn->file = fopen(filename, "r+");
 
+		
+		/* If a connection to the file does exist, you've worked with it before and so you 
+		can load its database contents. */
         	if(conn->file) {
         		Database_load(conn);
         	}
         }
-
+	// Catches a possible stray NULL pointer from the fopen(filename, "r+") call.
         if(!conn->file) die("Failed to open the file");
 
+
+	/* return the pointer to the Connection struct which has: made space for the conn pointers
+	to Database *db and FILE *filename, made space for the Database, ensured a valid filename
+	exists for further use in the program - nice! */
         return conn;
     }
 
+
+    // Need to clean up after all those mallocs
     void Database_close(struct Connection *conn)
     {
+	/* conn should always exist but just in case something goes wrong you don't want to be 
+	freeing random memory blocks. */	
     	if(conn) {
+
+		/* int fclose(FILE *fp)
+		fclose flushes the current text stream pointed to by 'fp' and closes the
+		underlying file descriptor - 'filename' in this case. */
     		if(conn->file) fclose(conn->file);
     		if(conn->db) free(conn->db);
+		// Free the pointers associated with conn (to db and filename).
     		free(conn);
-    	}
+	} 
     }
+
+
+
 
     void Database_write(struct Connection *conn)
     {

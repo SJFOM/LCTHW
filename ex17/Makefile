@@ -4,6 +4,6 @@ TARGET = ex17
 all: $(TARGET)
 
 clean:
-	rm -r $(TARGET)
+	rm -r $(TARGET) $(TARGET).d*
 
 .PHONY: all clean
