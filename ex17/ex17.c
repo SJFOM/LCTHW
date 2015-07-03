@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <assert.h>
+//#include <assert.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -12,6 +12,7 @@
 
 struct Address {
 	int id;
+	// set tells the caller whether the id is taken or not (1 or 0).
 	int set;
 	char name[MAX_DATA];
 	char email[MAX_DATA];
@@ -226,7 +227,8 @@ struct Connection *Database_open(const char *filename, char mode)
     void Database_create(struct Connection *conn)
     {
     	int i = 0;
-
+	
+	// This loop creates a Database with empty id'd  unset (set=0) rows.
     	for(i = 0; i < MAX_ROWS; i++) {
 		// make a prototype to initialize it
     		struct Address addr = {.id = i, .set = 0};
@@ -256,11 +258,22 @@ struct Connection *Database_open(const char *filename, char mode)
     	addr->set = 1;
 
 	// WARNING: bug, read the "How to Break It" and fix this
+	/* if the length of name exceeds MAX_DATA, then no terminating NULL
+	character is found ('\0') and the resulting addr->name won't be 
+	NULL terminated either.
+
+	You can fix this by setting the last entry in name as a NULL character
+	so this never happens. */
+
     	char *res = strncpy(addr->name, name, MAX_DATA);
+	// Apply the fix.
+	addr->name[MAX_DATA-1] = '\0';
 	// demonstrate the strncpy bug
     	if(!res) die("Name copy failed");
 
     	res = strncpy(addr->email, email, MAX_DATA);
+	// Apply the fix.
+	addr->email[MAX_DATA-1] = '\0';
     	if(!res) die("Email copy failed");
     }
 
@@ -277,7 +290,8 @@ struct Connection *Database_open(const char *filename, char mode)
 
     void Database_delete(struct Connection *conn, int id)
     {
-    	struct Address addr = {.id = id, .set = 0};
+	// Set that id entry to zero - un-initialize it.    
+	struct Address addr = {.id = id, .set = 0};
     	conn->db->rows[id] = addr;
     }
 
