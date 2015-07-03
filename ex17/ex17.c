@@ -187,12 +187,39 @@ struct Connection *Database_open(const char *filename, char mode)
 
     void Database_write(struct Connection *conn)
     {
-    	rewind(conn->file);
+	/* void rewind(FILE *stream)
+	sets the file position indicator for the stream to the start of the file. */    
+	rewind(conn->file);
 
+	
+	/* size_t fwrite(void *ptr, size_t size, size_t nmemb, FILE *stream); 
+
+	function fwrite writes 'nmemb' elements of data, each 'size' bytes long,
+	to the stream pointed to by 'stream' obtaining them from the location 
+	pointed to by 'ptr'.  
+
+	RETURN: the number of items written - in this case, 1 database should be 
+	written so rc = 1 denotes a successful write. */
     	int rc = fwrite(conn->db, sizeof(struct Database), 1, conn->file);
     	if(rc != 1) die("Failed to write database.");
+	
+	/* Anything extraneous to the data already written to conn->file as per
+	fwrite above is stored in a buffer.
 
+	Think of fwrite as a note to the machine to "remember to write that
+	stream to that file later on once the buffer is full". This is because 
+	storing a certain (fixed) amount of bytes to memory first is faster
+	than random amounts every time. fflush empties this buffer and causes the
+	contents to be written into the file immediately. This is a tradeoff
+	between performance and correct program operation, but here in this instance,
+	since we don't want anything other than the database information entering the
+	file, we use fflush.
+
+	In a nutshell: If you want to force disk storage, as we do here, use fflush.  */
+	
     	rc = fflush(conn->file);
+	/* -1 indicates an EOF error and is the given return value of fflush upon 
+	unsucessful completion. */
     	if(rc == -1) die("Cannot flush database.");
     }
 
@@ -212,10 +239,22 @@ struct Connection *Database_open(const char *filename, char mode)
     void Database_set(struct Connection *conn, int id, const char *name,
     	const char *email) 
     {
-    	struct Address *addr = &conn->db->rows[id];
+	/* addr is set to the address of the database entry at the given
+	id address. The database has a fixed number of id entries listed
+	from 0-99. */    
+	struct Address *addr = &conn->db->rows[id];
+	/* The 'set' keyword is toggled between 1 and 0 where 1 means an
+	entry has been already given an id, name and email. If this is 
+	the case and an overwrite is attempted, the if statement is true
+	and the user is prompted to first remove that entry.*/
     	if(addr->set) die("Already set, delete it first");
 
+
+	/* If the code passes the previous if statement then it is assumed
+	that the requested id number was not taken and can now be toggled 
+	as set (as 1).*/
     	addr->set = 1;
+
 	// WARNING: bug, read the "How to Break It" and fix this
     	char *res = strncpy(addr->name, name, MAX_DATA);
 	// demonstrate the strncpy bug
