@@ -6,3 +6,26 @@ i.e. - remove the line:
 if(id >= MAX_ROWS) die("There's not that many records.");
 
 ```
+Addressing the strncpy bug.
+
+```
+void Database_set(struct Connection *conn, int id, const char *name,
+	const char *email) 
+{  
+	struct Address *addr = &conn->db->rows[id];
+	if(addr->set) die("Already set, delete it first", conn);
+
+	addr->set = 1;
+
+	char *res = strncpy(addr->name, name, MAX_DATA);
+	// Apply the fix.
+	addr->name[MAX_DATA-1] = '\0';
+	// demonstrate the strncpy bug
+	if(!res) die("Name copy failed", conn);
+
+	res = strncpy(addr->email, email, MAX_DATA);
+	// Apply the fix.
+	addr->email[MAX_DATA-1] = '\0';
+	if(!res) die("Email copy failed", conn);
+}
+```
