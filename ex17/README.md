@@ -2,13 +2,13 @@
 ##How to Break It
 The classic way is to remove some of the safety checks such that you can pass in arbitrary data. For example, if you remove the check on line 160 that prevents you from passing in any record number.
 i.e. - remove the line:
-```
+```c
 if(id >= MAX_ROWS) die("There's not that many records.");
 
 ```
 Addressing the strncpy bug.
 
-```
+```c
 void Database_set(struct Connection *conn, int id, const char *name,
 	const char *email) 
 {  
