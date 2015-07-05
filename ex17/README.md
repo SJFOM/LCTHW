@@ -122,8 +122,41 @@ void Database_set(struct Connection *conn, int id, const char *name,
 
 Keep increasing MAX_DATA and MAX_ROWS until your memory runs out - depends on how much RAM you have!
 
-#Extra Credit
+##Extra Credit
 
-##The die function needs to be augmented to let you pass the conn variable so it can close it and clean up.
+###The die function needs to be augmented to let you pass the conn variable so it can close it and clean up.
+
+This is easily ammended by adding a call to Database\_clean() in the die function. Note the prototype Database\_clean function coded above die(). 
+
+```c
+void Database_close(struct Connection *conn);
+
+void die(const char *message, struct Connection *conn)
+{
+
+	if(errno) {
+		perror(message);
+	} else {
+		printf("ERROR: %s\n", message);
+	}
+
+	Database_close(conn);
+
+	exit(1);
+}
+```
+
+Every call to the die() function now takes two parameters with the second being the "conn" Connection struct created in int main. Note also the first call to die() in int main passes NULL as its Connection struct as one has not yet been instantiated in the code.
+
+```c
+int main(int argc, char *argv[])
+{
+	if(argc < 3) die("USAGE: ex17 <dbfile> <action> [action params]", NULL);
+	.
+	.
+	.
+```
+
+###Change the code to accept parameters for MAX_DATA and MAX_ROWS, store them in the Database struct, and write that to the file, thus creating a database that can be arbitrarily sized.
 
 
