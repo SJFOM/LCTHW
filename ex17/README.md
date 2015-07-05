@@ -1,5 +1,7 @@
 #Exercise 17: Heap and Stack Memory Allocation
+=================
 ##How to Break It
+-----------------
 
 ###The classic way is to remove some of the safety checks such that you can pass in arbitrary data. For example, if you remove the check on line 160 that prevents you from passing in any record number.
 i.e. - remove the line:
@@ -81,3 +83,9 @@ void Database_set(struct Connection *conn, int id, const char *name,
 ###In the extra credit I have you augment the program to create arbitrary size databases. Try to see what the biggest database is before you cause the program to die for lack of memory from malloc.
 
 Keep increasing MAX_DATA and MAX_ROWS until your memory runs out - depends on how much RAM you have!
+
+#Extra Credit
+
+##The die function needs to be augmented to let you pass the conn variable so it can close it and clean up.
+
+
