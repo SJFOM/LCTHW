@@ -21,13 +21,12 @@ Now, the program doesn't get to warn the user when you use an invalid ID number 
 ERROR: ID is not set
 ➜  ex17 git:(master) ✗ 
 ```
-###You can also try corrupting the data file. Open it in any editor and change random bytes then close it
+###You can also try corrupting the data file. Open it in any editor and change random bytes then close it.
 
 First just copy over the original db.dat contents.
 
 ```
 ➜  ex17 git:(master) ✗ cat db.dat > corrupt.dat
-
 ```
 Now, open it up and remove a few bytes. Try call ./ex17 using this new file and check those nasty results!
 
@@ -45,7 +44,17 @@ Now, open it up and remove a few bytes. Try call ./ex17 using this new file and 
 ➜  ex17 git:(master) ✗ 
 ```
 
-Addressing the strncpy bug.
+###You could also find ways to pass bad arguments to the program when it's run, such as getting the file and action backwards will make it create a file named after the action, then do an action based on the first character.
+
+```
+➜  ex17 git:(master) ✗ ./ex17 c case.dat
+➜  ex17 git:(master) ✗ ./ex17 c c
+c            corrupt.dat
+```
+
+###There is a bug in this program because of strncpy being poorly designed. Go read about strncpy then try to find out what happens when the name or address you give is greater than 512 bytes. Fix this by simply forcing the last character to '\0' so that it's always set no matter what (which is what strncpy should do).
+
+Can fix this by appending a NULL '\0' character to the end of the addr->name and addr->email strings.
 
 ```c
 void Database_set(struct Connection *conn, int id, const char *name,
@@ -68,3 +77,7 @@ void Database_set(struct Connection *conn, int id, const char *name,
 	if(!res) die("Email copy failed", conn);
 }
 ```
+
+###In the extra credit I have you augment the program to create arbitrary size databases. Try to see what the biggest database is before you cause the program to die for lack of memory from malloc.
+
+Keep increasing MAX_DATA and MAX_ROWS until your memory runs out - depends on how much RAM you have!
