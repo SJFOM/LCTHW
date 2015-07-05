@@ -54,6 +54,46 @@ c            corrupt.dat
 
 ###There is a bug in this program because of strncpy being poorly designed. Go read about strncpy then try to find out what happens when the name or address you give is greater than 512 bytes. Fix this by simply forcing the last character to '\0' so that it's always set no matter what (which is what strncpy should do).
 
+Using the following python code to create a large enough string for entry:
+
+```py
+#!/usr/bin/env python
+
+from subprocess import call
+
+try:
+    call(['./ex17', 'db.dat', 'd', '5']);
+    call(['./ex17', 'db.dat', 'd', '6']);
+
+    # name is 494 bytes long.
+    name = "abcdefghijklmnopqrstuvwxyz"*19
+    arguments = ['./ex17', 'db.dat', 's', '5', name, 'zed@zedshaw.com']
+
+    call(arguments);
+
+    # name is now 520 bytes - 8 too many!
+    name = "abcdefghijklmnopqrstuvwxyz"*20
+    arguments = ['./ex17', 'db.dat', 's', '6', name, 'zed@zedshaw.com']
+
+    call(arguments);
+except Exception, e:
+	print e
+```
+
+Sample output from this file shows that strncpy gives a name error for ID number 6.
+
+```
+➜  ex17 git:(master) ✗ ./ex17 db.dat l
+0 zero zero@zedshaw.com
+1 zed zed@zedshaw.com
+2 frank frank@zedshaw.com
+3 joe joe@zedshaw.com
+4 sam sam@zedshaw.com
+5 abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz zed@zedshaw.com
+6 abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrzed@zedshaw.com zed@zedshaw.com
+80 eighty eighty@zedshaw.com
+```
+
 Can fix this by appending a NULL '\0' character to the end of the addr->name and addr->email strings.
 
 ```c
