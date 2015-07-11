@@ -1,9 +1,9 @@
 CFLAGS = -Wall -g
-TARGET = ex17
+TARGET = ex17 ex17_extra_cred
 
 all: $(TARGET)
 
 clean:
-	rm -r $(TARGET) $(TARGET).d*
+	rm -r $(TARGET) *.dSYM
 
 .PHONY: all clean
