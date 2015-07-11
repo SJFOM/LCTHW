@@ -4,11 +4,6 @@
 #include <errno.h>
 #include <string.h>
 
-
-//#define MAX_DATA 512
-//#define MAX_ROWS 100
-
-
 struct Address {
 	int id;
 	int set;
@@ -222,15 +217,8 @@ void Database_create(struct Connection *conn, int MAX_DATA, int MAX_ROWS)
 		
 		conn->db->rows[i]->id = i;
 		conn->db->rows[i]->set = 0;
-		
-		conn->db->rows[i]->name = (char *)malloc(conn->db->MAX_DATA);
-		conn->db->rows[i]->name = (char *)memset(conn->db->rows[i]->name, ' ', conn->db->MAX_DATA);
-	
-		conn->db->rows[i]->email = (char *)malloc(conn->db->MAX_DATA);
-		conn->db->rows[i]->email = (char *)memset(conn->db->rows[i]->email, ' ', conn->db->MAX_DATA);
-
-		//conn->db->rows[i]->name = (char*)strndup(" ", MAX_DATA);
-		//conn->db->rows[i]->email = (char*)strndup(" ", MAX_DATA);
+		conn->db->rows[i]->name = (char*)strndup(" ", MAX_DATA);
+		conn->db->rows[i]->email = (char*)strndup(" ", MAX_DATA);
 	}
 }
 
@@ -278,9 +266,9 @@ void Database_get(struct Connection *conn, int id)
 
 void Database_delete(struct Connection *conn, int id)
 { 	
-	// mode == 'd'
-	struct Address addr = {.id = id, .set = 0};
-	conn->db->rows[id] = &addr;
+	// mode == 'd'	
+	conn->db->rows[id]->id = id;
+	conn->db->rows[id]->set = 0;
 }
 
 void Database_list(struct Connection *conn)
@@ -301,7 +289,7 @@ void Database_list(struct Connection *conn)
 
 int id_error_catch(int id, struct Connection *conn)
 {
-	if(id >= conn->db->MAX_ROWS) {
+	if(id >= conn->db->MAX_ROWS || id < 0) {
 		printf("id addressed: %d\nMAX_ROWS: %d\n",
 			id, conn->db->MAX_ROWS);			
 		die("main: There's not that many records", conn); 
@@ -318,9 +306,6 @@ int main(int argc, char *argv[])
 	char action = argv[2][0];
 	struct Connection *conn = Database_open(filename, action);
 	int id = 0;
-
-	// if(argc > 3) id = atoi(argv[3]);
-	// if case=='c' then id=MAX_DATA but its overwritten anyway so its ok.
 
 	switch(action) {
 		case 'c':
@@ -341,7 +326,6 @@ int main(int argc, char *argv[])
 		if(argc != 6) die("Need id, name, email to set", conn);
 
 		id = id_error_catch(atoi(argv[3]), conn);
-		printf("id: %d\n", id);
 		Database_set(conn, id, argv[4], argv[5]);
 		Database_write(conn);
 		break;
@@ -359,7 +343,6 @@ int main(int argc, char *argv[])
 		break;
 		default:
 		die("Invalid action, only: c=create, g=get, s=set, d=del, l=list", conn);
-
 
 	}
 
