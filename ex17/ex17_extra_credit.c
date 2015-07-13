@@ -92,9 +92,8 @@ void Database_load(struct Connection *conn)
 
 		// need to make space for name and email.
 
-		row->name = malloc(sizeof(*row->name) * conn->db->MAX_DATA);			
-		row->email = malloc(sizeof(*row->email) * conn->db->MAX_DATA);		
-
+		row->name = malloc(sizeof(char/**row->name*/) * conn->db->MAX_DATA);			
+		row->email = malloc(sizeof(char/**row->email*/) * conn->db->MAX_DATA);		
 		if(!(row->name && row->email)){
 		die("Database load: Failed to allocate memory for name and email strings in Address.", conn);}
 
@@ -144,8 +143,13 @@ void Database_close(struct Connection *conn)
 			for(i = 0; i < conn->db->MAX_ROWS; i++) {
 				
 				struct Address *cur = conn->db->rows[i];
+				//free(cur->id);
+				//free(cur->set);
+				free(cur->name);
+				free(cur->email);
 				free(cur);}
-		}		
+		}
+		if(conn->db->rows) free(conn->db->rows);		
 		if(conn->file) fclose(conn->file);
 		if(conn->db) free(conn->db);
 		free(conn);
@@ -309,8 +313,7 @@ int main(int argc, char *argv[])
 	switch(action) {
 		case 'c':
 		if(argc < 5) {
-			//conn->db = NULL;
-			//free(conn->file);
+			fclose(conn->file);
 			free(conn->db);
 			free(conn);
 			die("USAGE: ex17 <dbfile> c MAX_DATA MAX_ROWS", NULL);
