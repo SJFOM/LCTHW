@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <assert.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
@@ -100,10 +99,10 @@ void Database_load(struct Connection *conn)
 		die("Database load: Failed to allocate memory for name and email strings in Address.", conn);}
 
 		// read in both strings
-		rc = fread(row->name, (sizeof(*row->name) * conn->db->MAX_DATA), 1, conn->file);
+		rc = fread(row->name, (sizeof(char/**row->name*/) * conn->db->MAX_DATA), 1, conn->file);
 		if(rc!=1) die("Database load: Failed to load name.", conn);
 
-		rc = fread(row->email, (sizeof(*row->email) * conn->db->MAX_DATA), 1, conn->file);	
+		rc = fread(row->email, (sizeof(char/**row->email*/) * conn->db->MAX_DATA), 1, conn->file);	
 		if(rc!=1) die("Database load: Failed to load email.", conn);
 
 		// Need to free each malloc. Could do it here but more proper to do it in Database_close.
@@ -157,7 +156,7 @@ void Database_close(struct Connection *conn)
 void Database_write(struct Connection *conn)
 {   
 	rewind(conn->file);
-	
+
 	size_t i;
 	int rc;
 
@@ -289,9 +288,9 @@ void Database_list(struct Connection *conn)
 
 int id_error_catch(int id, struct Connection *conn)
 {
-	if(id >= conn->db->MAX_ROWS || id < 0) {
-		printf("id addressed: %d\nMAX_ROWS: %d\n",
-			id, conn->db->MAX_ROWS);			
+	if(id < 0 || id >= conn->db->MAX_ROWS) {
+		printf("id addressed: %d\nMAX_ROWS: 0 ->  %d\n",
+			id, conn->db->MAX_ROWS-1);			
 		die("main: There's not that many records", conn); 
 		return 0;
 	} else { return id; }
@@ -309,7 +308,13 @@ int main(int argc, char *argv[])
 
 	switch(action) {
 		case 'c':
-		if(argc < 5) die("USAGE: ex17 <dbfile> c MAX_DATA MAX_ROWS", conn);
+		if(argc < 5) {
+			//conn->db = NULL;
+			//free(conn->file);
+			free(conn->db);
+			free(conn);
+			die("USAGE: ex17 <dbfile> c MAX_DATA MAX_ROWS", NULL);
+		}
 
 		Database_create(conn, atoi(argv[3]), atoi(argv[4]));
 		Database_write(conn);
