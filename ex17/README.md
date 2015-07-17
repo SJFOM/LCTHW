@@ -163,6 +163,56 @@ int main(int argc, char *argv[])
 ```
 See ex17_extra_credit.c
 ```
+###Add more operations you can do on the database, like find.
+
+Added "find" functionality to the ex17_with_find.c program which allows the user to search for a database entry by name or email (must be specified by user). The extra action is given by 'f' and is documented in the switch case in int main as:
+
+```c
+case 'f':
+		if(argc < 5) die("USAGE: ex17 <dbfile> f <name/email> \"search term\"", conn);
+
+		const char *term = argv[3];
+		const char *search = argv[4];
+		if(strcmp(term, "name") == 0) {
+			// search for name
+			find(1, search, conn);
+		} else if(strcmp(term, "email") == 0) {
+			// search for email
+			find(0,search, conn);
+		}
+		break;
+
+```
+The function "find" is as follows:
+
+```c
+void find(int state, const char *search, struct Connection *conn)
+{
+	int i = 0;
+	int found = 0;
+	
+	struct Database *db = conn->db;
+
+	for(i = 0; i < db->MAX_ROWS; i++)
+	{
+		struct Address *cur = db->rows[i];
+		
+		if((!(strcmp(search,cur->name)) && state) || (!(strcmp(search, cur->email)) && !state)){
+			found = 1;
+			Address_print(cur);}
+	}
+	if(!found) puts("entry not found");
+}
+
+```
 
 
+###Read about how C does it's struct packing, and then try to see why your file is the size it is. See if you can calculate a new size after adding more fields.
+
+Found a very good article that explains the topic well.
+
+```url
+http://www.catb.org/esr/structure-packing/
+```
+Created a file named struct_padding.c in the extra_credit directory to explore bit padding in structs.
 
