@@ -6,6 +6,8 @@
 struct Address {
 	int id;
 	int set;
+	// new entry
+	int age;
 	char *name;
 	char *email;
 };
@@ -40,8 +42,8 @@ void die(const char *message, struct Connection *conn)
 
 void Address_print(struct Address *addr)
 {
-	printf("%d %s %s\n", 
-		addr->id, addr->name, addr->email);
+	printf("%d %d %s %s\n", 
+		addr->id, addr->age, addr->name, addr->email);
 }
 
 void Database_load(struct Connection *conn)
@@ -84,16 +86,20 @@ void Database_load(struct Connection *conn)
 		// make things a bit easier
 		struct Address *row = conn->db->rows[i];
 
+		// make space for set, id and age.
 		rc = fread(&row->id, sizeof(row->id), 1,conn->file);
 		if(rc!=1) die("Database load: Failed to load id.", conn);
 	
 		rc = fread(&row->set, sizeof(row->set), 1, conn->file);
 		if(rc!=1) die("Database load: Failed to load set state.", conn);
+	
+		rc = fread(&row->age, sizeof(row->age), 1, conn->file);
+		if(rc!=1) die("Database load: Failed to load age.", conn);
 
 		// need to make space for name and email.
 
-		row->name = malloc(sizeof(char/**row->name*/) * conn->db->MAX_DATA);			
-		row->email = malloc(sizeof(char/**row->email*/) * conn->db->MAX_DATA);		
+		row->name = malloc(sizeof(char) * conn->db->MAX_DATA);			
+		row->email = malloc(sizeof(char) * conn->db->MAX_DATA);		
 		if(!(row->name && row->email)){
 		die("Database load: Failed to allocate memory for name and email strings in Address.", conn);}
 
@@ -143,8 +149,6 @@ void Database_close(struct Connection *conn)
 			for(i = 0; i < conn->db->MAX_ROWS; i++) {
 				
 				struct Address *cur = conn->db->rows[i];
-				//free(cur->id);
-				//free(cur->set);
 				free(cur->name);
 				free(cur->email);
 				free(cur);}
@@ -183,6 +187,10 @@ void Database_write(struct Connection *conn)
 		//load set
 		if(fwrite(&row->set, sizeof(row->set),1,conn->file) != 1)
 		die("Database write: could not write set.", conn);
+	
+		//load age
+		if(fwrite(&row->age, sizeof(row->age),1,conn->file) != 1)
+		die("Database write: could not write age.", conn);
 
 		// load name
 		if(fwrite(row->name, sizeof(char)*conn->db->MAX_DATA,1,conn->file) != 1)
@@ -219,14 +227,15 @@ void Database_create(struct Connection *conn, int MAX_DATA, int MAX_ROWS)
 		conn->db->rows[i] = (struct Address*)malloc(sizeof(struct Address));
 		
 		conn->db->rows[i]->id = i;
-		conn->db->rows[i]->set = 0;
+		conn->db->rows[i]->set = 0;	
+		conn->db->rows[i]->age = -1;
 		conn->db->rows[i]->name = (char*)strndup(" ", MAX_DATA);
 		conn->db->rows[i]->email = (char*)strndup(" ", MAX_DATA);
 	}
 }
 
 
-void Database_set(struct Connection *conn, int id, const char *name, const char *email) 
+void Database_set(struct Connection *conn, int id, int age, const char *name, const char *email) 
 {  
 	// mode == 's'
 
@@ -243,6 +252,7 @@ void Database_set(struct Connection *conn, int id, const char *name, const char 
 	int MAX_DATA = conn->db->MAX_DATA;
 
 	addr->set = 1;
+	addr->age = age;
 	addr->name = malloc(sizeof(char) * MAX_DATA);
 	addr->email = malloc(sizeof(char) * MAX_DATA);
 
@@ -272,6 +282,7 @@ void Database_delete(struct Connection *conn, int id)
 	// mode == 'd'	
 	conn->db->rows[id]->id = id;
 	conn->db->rows[id]->set = 0;
+	conn->db->rows[id]->age = 0;
 }
 
 void Database_list(struct Connection *conn)
@@ -289,6 +300,28 @@ void Database_list(struct Connection *conn)
 		}
 	}
 }
+
+
+void find(int state, const char *search, struct Connection *conn)
+{
+	int i = 0;
+	int found = 0;
+	
+	struct Database *db = conn->db;
+
+	for(i = 0; i < db->MAX_ROWS; i++)
+	{
+		struct Address *cur = db->rows[i];
+		
+		if((!(strcmp(search,cur->name)) && state) 
+		|| (!(strcmp(search, cur->email)) && !state) 
+		|| (atoi(search) == cur->age && state==2)){
+			found = 1;
+			Address_print(cur);}
+	}
+	if(!found) puts("entry not found");
+}
+
 
 int id_error_catch(int id, struct Connection *conn)
 {
@@ -331,10 +364,10 @@ int main(int argc, char *argv[])
 		break;
 
 		case 's':
-		if(argc != 6) die("Need id, name, email to set", conn);
+		if(argc != 7) die("Need id, age, name, email to set", conn);
 
 		id = id_error_catch(atoi(argv[3]), conn);
-		Database_set(conn, id, argv[4], argv[5]);
+		Database_set(conn, id, atoi(argv[4]), argv[5], argv[6]);
 		Database_write(conn);
 		break;
 
@@ -349,8 +382,26 @@ int main(int argc, char *argv[])
 		case 'l':
 		Database_list(conn);
 		break;
+
+		case 'f':
+		if(argc < 5) die("USAGE: ex17 <dbfile> f <name/email> \"search term\"", conn);
+
+		const char *term = argv[3];
+		const char *search = argv[4];
+		if(strcmp(term, "name") == 0) {
+			// search for name
+			find(1, search, conn);
+		} else if(strcmp(term, "email") == 0) {
+			// search for email
+			find(0, search, conn);
+		} else if(strcmp(term, "age") == 0) {
+			//search for age
+			find(2, search, conn);
+		}
+		break;
+
 		default:
-		die("Invalid action, only: c=create, g=get, s=set, d=del, l=list", conn);
+		die("Invalid action, only: c=create, g=get, s=set, d=del, l=list, f=find", conn);
 
 	}
 
