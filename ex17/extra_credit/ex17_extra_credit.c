@@ -6,8 +6,7 @@
 struct Address {
 	int id;
 	int set;
-	// new entry
-	int age;
+	int age; // new entry
 	char *name;
 	char *email;
 };

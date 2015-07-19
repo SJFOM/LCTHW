@@ -216,3 +216,10 @@ http://www.catb.org/esr/structure-packing/
 ```
 Created a file named struct_padding.c in the extra_credit directory to explore bit padding in structs.
 
+###Add some more fields to the Address and make them searchable.
+
+Added an ```c int age``` field to Address and made it searchable with the find function as described above. Minor changes include adding ```c state==2``` for the case where the search term is "age".
+
+###Write a shell script that will do your testing automatically for you by running commands in the right order. Hint: Use set -e at the top of a bash to make it abort the whole script if any command has an error.
+
+
