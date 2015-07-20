@@ -265,6 +265,10 @@ $PROGRAM $DB f email email6
 
 $PROGRAM $DB f age 9
 ```
+This doesn't allow for multiple connections if you wanted to work with a few files at once for example, e.g.: concatenating one part of a file to another.
+
+###Go research "stack data structure" and write one in your favorite language, then try to do it in C.
+
 
 
 
