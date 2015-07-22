@@ -13,6 +13,7 @@ void die(const char *message)
 	}
 
 	exit(1);
+
 }
 
 // a typedef creates a fake type, in this
@@ -23,10 +24,8 @@ typedef int (*compare_cb)(int a, int b);
  * A classic bubblesort function that uses the
  * compare_cb to do the sorting.
  */
-
 int *bubble_sort(int *numbers, int count, compare_cb cmp)
 {
-
 	int temp = 0;
 	int i = 0;
 	int j = 0;
@@ -36,10 +35,8 @@ int *bubble_sort(int *numbers, int count, compare_cb cmp)
 
 	memcpy(target, numbers, count * sizeof(int));
 
-	for(i = 0; i < count; i++)
-	{
-		for(j = 0; j < count - 1; j++)
-		{
+	for(i = 0; i < count; i++) {
+		for(j = 0; j < count - 1; j++) {
 			if(cmp(target[j], target[j+1]) > 0) {
 				temp = target[j+1];
 				target[j+1] = target[j];
@@ -81,14 +78,22 @@ void test_sorting(int *numbers, int count, compare_cb cmp)
 
 	if(!sorted) die("Failed to sort as requested.");
 
-	for(i = 0; i < count; i++)
-	{
+	for(i = 0; i < count; i++) {
 		printf("%d", sorted[i]);
 	}	
 	printf("\n");
 	
 	free(sorted);
+
+	unsigned char *data = (unsigned char *)cmp;
+
+	for(i = 0; i < 25; i++) {
+		printf("%02x:", data[i]);
+	}
+
+	printf("\n");
 }
+
 
 int main(int argc, char *argv[])
 {
@@ -101,8 +106,7 @@ int main(int argc, char *argv[])
 	int *numbers = malloc(sizeof(int) * count);
 	if(!numbers) die("Memory error.");
 
-	for(i = 0; i < count; i++)
-	{
+	for(i = 0; i < count; i++) {
 		numbers[i] = atoi(inputs[i]);
 	}
 
@@ -114,8 +118,3 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
-
-
-
-
