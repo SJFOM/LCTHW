@@ -269,6 +269,157 @@ This doesn't allow for multiple connections if you wanted to work with a few fil
 
 ###Go research "stack data structure" and write one in your favorite language, then try to do it in C.
 
+A good link to the theory of "stack data structure": ```https://en.wikibooks.org/wiki/Data_Structures/Stacks_and_Queues ```.
 
+First implementation in Python: 
+
+```py
+#!/usr/bin/env python
+
+class Stack:
+    def __init__(self, stack_size):
+        self.nodes = []
+
+    def push(self, value):
+        self.nodes.append(value)
+
+    def top(self):
+        return self.nodes[-1]
+
+    def _pop(self):
+        return self.nodes.pop()
+
+    def is_empty(self):
+        return self.size() == 0
+
+    def is_full(self):
+        return self.size() == stack_size
+
+    def size(self):
+        return len(self.nodes)
+
+stack_size = 10
+stack = Stack(stack_size)
+
+i = 1
+while not stack.is_full():
+    stack.push(i)
+    i += 1
+
+while not stack.is_empty():
+    print stack.top()
+    stack._pop()
+
+```
+
+Next, implemented in c using a struct to represent the Stack.
+
+```c
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <assert.h>
+
+
+#define STACK_SIZE 10
+
+struct Stack {
+	// total size of stack
+	int nodes[STACK_SIZE];
+	// current size of stack in-use
+	int size;
+};
+
+struct Stack *stack_init() 
+{
+	struct Stack *mystack = malloc(sizeof(struct Stack));
+	
+	assert(mystack != NULL);
+
+	mystack->size = 0;
+
+	return mystack;
+}
+
+void close_stack(struct Stack *stack)
+{
+	if(stack) free(stack);
+}
+
+void die(const char *message, struct Stack *stack)
+{
+	if(errno) {
+		perror(message);
+	} else {
+		printf("ERROR: %s\n", message);
+	}
+	
+	close_stack(stack);
+
+	exit(1);
+}
+
+void push(struct Stack *stack, int value)
+{
+	// implements a "is full" function check.
+	// hence, no need for separate function.
+	// see "stack data structure" for more...
+	if(stack->size < STACK_SIZE) {
+		stack->nodes[stack->size] = value;
+		stack->size++;
+	} else {
+		die("Stack is full", stack);
+	}
+}
+
+void pop(struct Stack *stack) 
+{
+	// implements an "is empty" function check
+	// hence, no need for separate function.
+	// see "stack data structure" for more...
+	if(stack->size > 0) {
+		stack->size--;
+	} else {
+		die("Stack is empty", stack);
+	}
+}
+
+int top(struct Stack *stack)
+{
+	return stack->nodes[stack->size-1];
+}
+
+
+int main(int argc, char *argv[])
+{
+	struct Stack *mystack = stack_init();
+
+	int i = 0;
+
+	puts("PUSH");
+
+	// load up the stack
+	for(i = 0; i < STACK_SIZE; i++)
+	{	
+		// push(struct Stack, int value);
+		push(mystack, i);
+		printf("Top of stack: %d\n\n", top(mystack));
+	}
+
+	puts("POP");
+
+	for(i = 0; i < STACK_SIZE; i++)
+	{	
+		printf("Top of stack %d\n\n", top(mystack));
+		pop(mystack);
+	}
+
+
+	close_stack(mystack);
+	return 0;
+}
+
+```
 
 
