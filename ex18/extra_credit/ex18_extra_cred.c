@@ -67,6 +67,13 @@ int strange_order(int a, int b)
 	}
 }
 
+
+// Extra Credit - pass a bad function to the compare_cb
+/*int bad_callback(int a, int b, int c)
+{
+	return a + b + c;
+} */
+
 /**
  * Used to test that we are sorting things correctly
  * by doing the sort and printing it out.
@@ -82,17 +89,26 @@ void test_sorting(int *numbers, int count, compare_cb cmp)
 		printf("%d", sorted[i]);
 	}	
 	printf("\n");
+
+
+
+
+
+
+
+
+
 	
 	free(sorted);
 	
-	// line 167 in ex18 binary - hex format
+	/*
 	unsigned char *data = (unsigned char *)cmp;
 
 	for(i = 0; i < 25; i++) {
 		printf("%02x:", data[i]);
 	}
 
-	printf("\n\n");
+	printf("\n\n"); */
 }
 
 
@@ -114,6 +130,12 @@ int main(int argc, char *argv[])
 	test_sorting(numbers, count, sorted_order);
 	test_sorting(numbers, count, reverse_order);
 	test_sorting(numbers, count, strange_order);
+
+	// Extra Credit - pass a bad function to the compare_cb
+	//test_sorting(numbers, count, bad_callback);
+
+	// Extra Credit - pass NULL and watch your program burn...
+	// test_sorting(numbers, count, NULL);
 
 	free(numbers);	
 
