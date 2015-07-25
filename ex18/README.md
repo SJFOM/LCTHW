@@ -99,7 +99,7 @@ void test_sorting(int *numbers, int count, compare_cb cmp)
 
 ###Pass in NULL and watch your program seriously bite it. Then run Valgrind and see what that reports.
 
-Added a call in int main to use ```cNULL``` for compare_cb; resulting output is a seg fault:
+Added a call in int main to use ```NULL``` for compare_cb; resulting output is a seg fault:
 
 ```
 ➜  extra_credit git:(master) ✗ ./ex18_extra_cred 1 2 3 4
@@ -143,7 +143,7 @@ Valgrind isn't a fan of that:
 ==4539==         suppressed: 38,449 bytes in 415 blocks
 ```
 
-The jump to the invalid address at 0x0 refers to the ```cNULL``` pointer address. Bad permissions error is probably to do with 0x0 being a read only space in memory but the function is attempting to alter it which is a definite no-no.
+The jump to the invalid address at 0x0 refers to the ```NULL``` pointer address. Bad permissions error is probably to do with 0x0 being a read only space in memory but the function is attempting to alter it which is a definite no-no.
 
 ###Write another sorting algorithm, then change test_sorting so that it takes both an arbitrary sort function and the sort function's callback comparison. Use it to test both of your algorithms.
 
