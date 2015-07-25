@@ -19,7 +19,7 @@ We can see that each line starts with 55 but have different bodies and endings. 
 ```c
 test_sorting(numbers, count, sorted_order);
 ```
-In the compiled binary "ex18" (not ex18.c) you can locate these lines. You must use a hex editor to do so, e.g.: using vim - ":% ! xxd" to enter hex editor mode.
+In the compiled binary "ex18" (not ex18.c) you can locate these lines. You must use a hex editor to do so, e.g.: using vim - ":% ! xxd" to enter hex editor mode (":% ! xxd -r" to exit).
 
 ```
 "test_sorting(numbers, count, sorted_order);"
@@ -37,5 +37,29 @@ In the compiled binary "ex18" (not ex18.c) you can locate these lines. You must 
 ```
 
 ###Find other random things in your hex editor and change them. Rerun your program and see what happens. Changing strings you find are the easiest things to change.
+
+By changing some of the hex strings controlling the "USAGE" warning string won't display properly.
+
+```
+➜  ex18 git:(master) ✗ ./ex18
+ERROR: USAGE: ex18 4 3 1 5 6
+➜  ex18 git:(master) ✗ ./ex18_corrupt 
+ERROR: USAGE:
+
+```
+
+This was done by altering the hex code:
+
+```
+0000f80: 5553 4147 453a 2065 7831 3820 3420 3320  USAGE: ex18 4 3 
+0000f90: 3120 3520 3600 0000 0100 0000 1c00 0000  1 5 6...........
+```
+
+to:
+
+```
+0000f80: 5553 4147 453a 0000 0000 3820 3420 3320  USAGE:....8 4 3 
+0000f90: 0000 0000 0000 0000 0100 0000 1c00 0000  ................
+```
 
 

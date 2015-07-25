@@ -92,7 +92,7 @@ void test_sorting(int *numbers, int count, compare_cb cmp)
 		printf("%02x:", data[i]);
 	}
 
-	printf("\n");
+	printf("\n\n");
 }
 
 
