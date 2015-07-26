@@ -147,4 +147,84 @@ The jump to the invalid address at 0x0 refers to the ```NULL``` pointer address.
 
 ###Write another sorting algorithm, then change test_sorting so that it takes both an arbitrary sort function and the sort function's callback comparison. Use it to test both of your algorithms.
 
+Implemented a "Comb Sort" algorithm, see: ``` https://en.wikipedia.org/wiki/Comb_sort ```. 
 
+A new typedef is required to create a pointer to a function pointer such that ```comb_sort``` is the same type as ```bubble_sort```. The new typedef is:
+
+```c
+// Extra Credit - create a pointer to a function pointer for the
+// sorting algorithm to use
+typedef int *(*sort_cb)(int *numbers, int count, compare_cb cmp);
+```
+
+The algorithm implementation is as follows:
+
+```c
+int *comb_sort(int *numbers, int count, compare_cb cmp)
+{	
+	int temp = 0;
+	int i = 0;
+	int j = 0;
+ 	int *target = malloc(count * sizeof(int));
+	int swapped;
+	double shrink = 1.3;
+	int gap = count;
+
+	if(!target) die("Memory error.");
+
+	memcpy(target, numbers, count * sizeof(int));
+
+	for(;;) {
+		
+		// update the gap value for the next comb
+		gap = (int)gap/shrink;
+
+		if(gap < 1) gap = 1; // min gap is 1
+
+		swapped = 0;
+
+		// a single "comb" over the input list
+		for(i = 0;(i+gap) < count; i++){
+			
+			j = i+gap;
+
+			if(cmp(target[i], target[j]) > 0) {
+				temp = target[i];
+				target[i] = target[j];
+				target[j] = temp;							
+				// flag that a swap has occurred
+				swapped = 1;
+			}
+		}
+		
+		if(gap == 1 && !swapped) break;
+	}
+	return target;
+}
+
+```
+
+The output of ./ex18_extra_credit is now:
+
+```
+➜  extra_credit git:(master) ✗ ./ex18_extra_cred 1 4 2 5 6 8 9
+
+Using Bubble Sort method
+
+Sorted order
+1245689
+Reverse order
+9865421
+Strange order
+8654291
+
+Using Comb Sort method
+
+Sorted order
+1245689
+Reverse order
+9865421
+Strange order: causes infinite loop, don't use with Comb Sort...
+```
+
+Currently some issues with Strange order using Comb Sort causing an infinite loop...
