@@ -20,6 +20,11 @@ void die(const char *message)
 // case for a function pointer
 typedef int (*compare_cb)(int a, int b);
 
+
+// Extra Credit - create a pointer to a function pointer for the
+// sorting algorithm to use
+typedef int *(*sort_cb)(int *numbers, int count, compare_cb cmp);
+
 /**
  * A classic bubblesort function that uses the
  * compare_cb to do the sorting.
@@ -48,6 +53,49 @@ int *bubble_sort(int *numbers, int count, compare_cb cmp)
 	return target;
 }
 
+int *comb_sort(int *numbers, int count, compare_cb cmp)
+{	
+	int temp = 0;
+	int i = 0;
+	int j = 0;
+ 	int *target = malloc(count * sizeof(int));
+	int swapped;
+	double shrink = 1.3;
+	int gap = count;
+
+	if(!target) die("Memory error.");
+
+	memcpy(target, numbers, count * sizeof(int));
+
+	for(;;) {
+		
+		// update the gap value for the next comb
+		gap = (int)gap/shrink;
+
+		if(gap < 1) gap = 1; // min gap is 1
+
+		swapped = 0;
+
+		// a single "comb" over the input list
+		for(i = 0;(i+gap) < count; i++){
+			
+			j = i+gap;
+
+			if(cmp(target[i], target[j]) > 0) {
+				temp = target[i];
+				target[i] = target[j];
+				target[j] = temp;							
+				// flag that a swap has occurred
+				swapped = 1;
+			}
+		}
+		
+		if(gap == 1 && !swapped) break;
+	}
+	return target;
+}
+
+
 int sorted_order(int a, int b)
 {
 	return a - b;
@@ -67,21 +115,15 @@ int strange_order(int a, int b)
 	}
 }
 
-
-// Extra Credit - pass a bad function to the compare_cb
-/*int bad_callback(int a, int b, int c)
-{
-	return a + b + c;
-} */
-
 /**
  * Used to test that we are sorting things correctly
  * by doing the sort and printing it out.
  */
-void test_sorting(int *numbers, int count, compare_cb cmp)
+void test_sorting(int *numbers, int count, compare_cb cmp, sort_cb scb)
 {
 	int i = 0;
-	int *sorted = bubble_sort(numbers, count, cmp);
+	//int *sorted = bubble_sort(numbers, count, cmp);
+	int *sorted = scb(numbers, count, cmp);
 
 	if(!sorted) die("Failed to sort as requested.");
 
@@ -90,25 +132,8 @@ void test_sorting(int *numbers, int count, compare_cb cmp)
 	}	
 	printf("\n");
 
-
-
-
-
-
-
-
-
-	
 	free(sorted);
 	
-	/*
-	unsigned char *data = (unsigned char *)cmp;
-
-	for(i = 0; i < 25; i++) {
-		printf("%02x:", data[i]);
-	}
-
-	printf("\n\n"); */
 }
 
 
@@ -127,15 +152,23 @@ int main(int argc, char *argv[])
 		numbers[i] = atoi(inputs[i]);
 	}
 
-	test_sorting(numbers, count, sorted_order);
-	test_sorting(numbers, count, reverse_order);
-	test_sorting(numbers, count, strange_order);
+	puts("\nUsing Bubble Sort method\n");
 
-	// Extra Credit - pass a bad function to the compare_cb
-	//test_sorting(numbers, count, bad_callback);
+	puts("Sorted order");
+	test_sorting(numbers, count, sorted_order, bubble_sort);
+	puts("Reverse order");
+	test_sorting(numbers, count, reverse_order, bubble_sort);
+	puts("Strange order");
+	test_sorting(numbers, count, strange_order, bubble_sort);
 
-	// Extra Credit - pass NULL and watch your program burn...
-	// test_sorting(numbers, count, NULL);
+	puts("\nUsing Comb Sort method\n");
+
+	puts("Sorted order");
+	test_sorting(numbers, count, sorted_order, comb_sort);
+	puts("Reverse order");
+	test_sorting(numbers, count, reverse_order, comb_sort);
+	puts("Strange order: causes infinite loop, don't use with Comb Sort...");
+	//test_sorting(numbers, count, strange_order, comb_sort);
 
 	free(numbers);	
 
