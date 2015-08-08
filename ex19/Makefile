@@ -1,9 +1,10 @@
 CFLAGS = -Wall -g
-TARGET = ex19
 
-all: $(TARGET)
+all: ex19
+
+ex19: object.o
 
 clean:
 	rm -rf $(TARGET) *.dSYM
 
-.PHONY: all clean
+.PHONY: all ex19 clean
