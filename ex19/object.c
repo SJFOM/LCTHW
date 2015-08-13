@@ -22,7 +22,7 @@ void Object_describe(void *self)
 
 int Object_init(void *self)
 {
-	// do nothing
+	// do nothing really
 	return 1;
 }
 

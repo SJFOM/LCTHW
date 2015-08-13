@@ -6,7 +6,7 @@
 struct Monster {
 	Object proto;
 	int hit_points;
-}
+};
 
 typedef struct Monster Monster;
 
