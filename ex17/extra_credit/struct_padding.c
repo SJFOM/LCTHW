@@ -5,7 +5,7 @@
 struct Person {
 	char *name;    // 8 bytes: 8
 	char initial;  // 1 bytes: 9
-	int age:6;     // 6 bits: 9 byes and 6 bits
+	int age:6;     // 6 bits: 9 bytes and 6 bits
 	int height:10; // 10 bits: 9 bytes and 16 bits
 	int weight:10; // 10 bits: 9 bytes and 26 bits
 		       // Remember, 8 bits in a byte
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	printf("int:6: %zu\nint:10*2: %zu\n",
 		sizeof(John->age), sizeof(John->height)*2); */
 
-	printf("Size of struct: %zu\n", sizeof(struct Person));
+	printf("Size of struct: %zu bytes\n", sizeof(struct Person));
 
 	free(John->name);
 	free(John);
