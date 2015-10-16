@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 
 void inc_number(int number[]);
 
@@ -24,23 +23,21 @@ int main(int argc, char *argv[])
 
 void inc_number(int number[])
 {
-	int value = number[0]*1000 + number[1]*100
-		+ number[2]*10 + number[3];
+	register unsigned int value = number[0]*1000 + number[1]*100
+		+ number[2]*10 + number[3] + 1;
 
-	printf("input = %d\n", value);
+	//value++;
 
-	value++;
+	//unsigned int output[] = {0,0,0,0};
 
-	int output[] = {0,0,0,0};
+	register unsigned int i = 0;
+	register unsigned int div = 10;
 
-	int digit = 0;
-
-	for(int i=3; value > 0; i--) {
-		digit = value % 10;
-		output[i] = digit;
-		value /= 10;
+	for(i=3; value > 0; i--) {
+		number[i] = value % div;
+		value /= div;
 	}
-	
-	printf("output = %d%d%d%d\n", output[0], output[1],
-			output[2], output[3]);
+
+	printf("output = %d%d%d%d\n", number[0], number[1],
+			number[2], number[3]);
 }

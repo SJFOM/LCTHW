@@ -5,6 +5,6 @@ TARGET=increment
 all: $(TARGET)
 
 clean:
-	rm -r $(TARGET) $(TARGET).dSYM
+	rm -r $(TARGET)
 
 .PHONY: all clean
