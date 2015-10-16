@@ -24,16 +24,14 @@ int *inc_number(int number[])
 	register unsigned int value = number[0]*1000 + number[1]*100
 		+ number[2]*10 + number[3] + 1;
 
-	//if(value > 9999) { value /= 10;}
-
-	//unsigned int output[] = {0,0,0,0};
-
-	register unsigned int i = 0;
-	register unsigned int div = 10;
-
-	for(i=3; value > 0; i--) {
-		number[i] = value % div;
-		value /= div;
+	if(number[3] == 9){
+		if(number[2] == 9){
+			if(number[1] == 9){
+				if(number[0] == 9){
+						number[] = {9,9,9,9};
+				}
+			}
+		}
 	}
 
 	//printf("output = %d%d%d%d\n", number[0], number[1],
