@@ -1,10 +1,9 @@
 CFLAGS=-Wall -g
-
-TARGET=increment
+TARGET = inc_number
 
 all: $(TARGET)
 
 clean:
-	rm -r $(TARGET)
+	rm -r inc_number
 
 .PHONY: all clean

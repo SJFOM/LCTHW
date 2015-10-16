@@ -4,17 +4,12 @@ void inc_number(int number[]);
 
 int main(int argc, char *argv[])
 {
-	int number[4] = {0,0,2,1};
+	int number[4] = {9,9,9,8};
 
-	int value = number[0]*1000 + number[1]*100
-		+ number[2]*10 + number[3];
+	//int value = number[0]*1000 + number[1]*100
+	//	+ number[2]*10 + number[3];
 
-	printf("User input: %d\n", value);
-
-	//printf("1: %s\n",(**char)1);
-
-	// Think about using weighting factors?
-	//int W[4] = {1000,100,10,1};
+	//printf("User input: %d\n", value);
 
 	inc_number(number);
 	return 0;
@@ -26,7 +21,7 @@ void inc_number(int number[])
 	register unsigned int value = number[0]*1000 + number[1]*100
 		+ number[2]*10 + number[3] + 1;
 
-	//value++;
+	//if(value > 9999) { value /= 10;}
 
 	//unsigned int output[] = {0,0,0,0};
 
