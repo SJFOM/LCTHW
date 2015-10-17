@@ -21,6 +21,11 @@ int main(int argc, char *argv[])
 
 int *inc_number(int number[])
 {
+	register unsigned int flag = 0;
+	for(i=3; value > 0; i--) {
+		if(number[i] < 0){flag = 1;}
+	}
+
 	register unsigned int value = number[0]*1000 + number[1]*100
 		+ number[2]*10 + number[3] + 1;
 
