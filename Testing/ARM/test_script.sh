@@ -4,14 +4,23 @@
 set -e
 
 # Set up the program variables
-PROGRAM=./increment
+PROGRAM=./inc_number
 MAX_INPUT=9998
 
 # Do a bit of cleaning up
-rm -rf $PROGRAM
-CFLAGS="Wall -g" make $PROGRAM
+#rm -rf $PROGRAM
+#CFLAGS="Wall -g" make $PROGRAM
 
-for i in `seq 0 $MAX_INPUT`;
+for i in `seq 2 $MAX_INPUT`;
 do
-	$PROGRAM i
+	A="$($PROGRAM $[$i-1] | less)"
+	B="$($PROGRAM $i | less)"
+	if [ $[B - A] != "1" ]; then
+		echo "ERROR: Difference is incorrect."
+		echo "$[B - A]"
+	fi
 done
+
+# $PROGRAM "$($PROGRAM 0001 | less)"
+# $PROGRAM "$($PROGRAM 0002 | less)"
+
