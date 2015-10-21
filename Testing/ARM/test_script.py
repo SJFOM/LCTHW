@@ -52,7 +52,7 @@ for i in range(MIN_INPUT, MAX_INPUT+1):
         print "*"*60
         print "\nDifference = ", "(",output,") - (", j, ")",
         ", should be 1."
-        sys.exit(""" Either integer difference is incorrect OR 
-            end of loop encountered.""")
+        sys.exit(" Either integer difference is incorrect OR "
+            "end of loop encountered.")
 
 

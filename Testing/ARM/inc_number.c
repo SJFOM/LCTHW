@@ -25,7 +25,7 @@ int *inc_number(int number[])
 
 	register unsigned int i = 0;
 	register unsigned int sign = 0;
-	register unsigned int flag[4] = {1000,100,10,1};
+	unsigned int flag[4] = {1000,100,10,1};
 
 	for(i = 0; i <= 3; i++) {
 		if(number[i] < 0){
@@ -35,36 +35,12 @@ int *inc_number(int number[])
 		}
 	}
 
-	// Maybe try using the indexing of the previous for loop for the value and just += it as a sum?
-	//if(value > 9999) { value /= 10;}
-
 	register unsigned int value = number[0]*flag[0]
 	+ number[1]*flag[1]
 	+ number[2]*flag[2]
 	+ number[3]*flag[3];
 
-	// printf("value %d\n", value);
-
-	if(sign == 0){
-		// if(value == 9999){
-		// 	*number = 0;
-		// 	return number;
-		// }
-		value++;
-	} else {
-	//puts("Yep, I'm negative");
-		value--;
-	// value *= -1;
-	// number[i] *= -1;
-	}
-
-	//if(value == 0){number[3] = 1;}
-
-	// printf("value %d\n", value);
-
-	// value += (sign) ? -1 : 1;
-
-	//register unsigned int temp = i;
+	value += (sign) ? -1 : 1;
 
 	memset(number, 0, 4 * sizeof(number[0]));
 
@@ -75,17 +51,7 @@ int *inc_number(int number[])
 		value /= div;
 	}
 
-	// i=3;
-	// while(value > 0 && i!=-1){
-	// 	printf("value %% div: %d\n", value % div);
-	// 	printf("i: %d\n", i);
-	// 	number[i] = value % div; 
-	// 	value /= div;
-	// 	i--;
-	// }
-
 	if(sign){number[i+1] *= -1;}
-	//number[temp] *= -1;
 
 	return number;
 }
