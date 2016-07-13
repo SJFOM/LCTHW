@@ -36,7 +36,6 @@ int main(int argc, char *argv[])
 
 	printf("%s's age: %d\n", frank.name, frank.age);
 	
-
 	// print them out and where they are in memory
 	printf("Joe is at memory location: %p\n", &joe);
 	Person_print(joe);
