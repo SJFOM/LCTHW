@@ -13,7 +13,5 @@ int main(int argc, char *argv[])
 
 	printf("New ages[0]: %d\n", *age_pos);
 
-
-
 	return 0;
 }
