@@ -1,8 +1,8 @@
-#*Exercise 17: Heap and Stack Memory Allocation*
+# *Exercise 17: Heap and Stack Memory Allocation*
 
-##How to Break It
+## How to Break It
 
-###The classic way is to remove some of the safety checks such that you can pass in arbitrary data. For example, if you remove the check on line 160 that prevents you from passing in any record number.
+### The classic way is to remove some of the safety checks such that you can pass in arbitrary data. For example, if you remove the check on line 160 that prevents you from passing in any record number.
 i.e. - remove the line:
 ```c
 if(id >= MAX_ROWS) die("There's not that many records.");
@@ -45,7 +45,7 @@ Now, open it up and remove a few bytes. Try call ./ex17 using this new file and 
 ➜  ex17 git:(master) ✗ 
 ```
 
-###You could also find ways to pass bad arguments to the program when it's run, such as getting the file and action backwards will make it create a file named after the action, then do an action based on the first character.
+### You could also find ways to pass bad arguments to the program when it's run, such as getting the file and action backwards will make it create a file named after the action, then do an action based on the first character.
 
 ```
 ➜  ex17 git:(master) ✗ ./ex17 c case.dat
@@ -53,7 +53,7 @@ Now, open it up and remove a few bytes. Try call ./ex17 using this new file and 
 c            corrupt.dat
 ```
 
-###There is a bug in this program because of strncpy being poorly designed. Go read about strncpy then try to find out what happens when the name or address you give is greater than 512 bytes. Fix this by simply forcing the last character to '\0' so that it's always set no matter what (which is what strncpy should do).
+### There is a bug in this program because of strncpy being poorly designed. Go read about strncpy then try to find out what happens when the name or address you give is greater than 512 bytes. Fix this by simply forcing the last character to '\0' so that it's always set no matter what (which is what strncpy should do).
 
 Using the following python code to create a large enough string for entry:
 
@@ -119,13 +119,13 @@ void Database_set(struct Connection *conn, int id, const char *name,
 }
 ```
 
-###In the extra credit I have you augment the program to create arbitrary size databases. Try to see what the biggest database is before you cause the program to die for lack of memory from malloc.
+### In the extra credit I have you augment the program to create arbitrary size databases. Try to see what the biggest database is before you cause the program to die for lack of memory from malloc.
 
 Keep increasing MAX_DATA and MAX_ROWS until your memory runs out - depends on how much RAM you have!
 
-##Extra Credit
+## Extra Credit
 
-###The die function needs to be augmented to let you pass the conn variable so it can close it and clean up.
+### The die function needs to be augmented to let you pass the conn variable so it can close it and clean up.
 
 This is easily ammended by adding a call to Database\_clean() in the die function. Note the prototype Database\_clean function coded above die(). 
 
@@ -158,12 +158,12 @@ int main(int argc, char *argv[])
 	.
 ```
 
-###Change the code to accept parameters for MAX_DATA and MAX_ROWS, store them in the Database struct, and write that to the file, thus creating a database that can be arbitrarily sized.
+### Change the code to accept parameters for MAX_DATA and MAX_ROWS, store them in the Database struct, and write that to the file, thus creating a database that can be arbitrarily sized.
 
 ```
 See ex17_extra_credit.c
 ```
-###Add more operations you can do on the database, like find.
+### Add more operations you can do on the database, like find.
 
 Added "find" functionality to the ex17_with_find.c program which allows the user to search for a database entry by name or email (must be specified by user). The extra action is given by 'f' and is documented in the switch case in int main as:
 
@@ -207,7 +207,7 @@ void find(int state, const char *search, struct Connection *conn)
 ```
 
 
-###Read about how C does it's struct packing, and then try to see why your file is the size it is. See if you can calculate a new size after adding more fields.
+### Read about how C does it's struct packing, and then try to see why your file is the size it is. See if you can calculate a new size after adding more fields.
 
 Found a very good article that explains the topic well.
 
@@ -216,11 +216,11 @@ http://www.catb.org/esr/structure-packing/
 ```
 Created a file named struct_padding.c in the extra_credit directory to explore bit padding in structs.
 
-###Add some more fields to the Address and make them searchable.
+### Add some more fields to the Address and make them searchable.
 
 Added an ```c int age``` field to Address and made it searchable with the find function as described above. Minor changes include adding ```c state==2``` for the case where the search term is "age".
 
-###Write a shell script that will do your testing automatically for you by running commands in the right order. Hint: Use set -e at the top of a bash to make it abort the whole script if any command has an error.
+### Write a shell script that will do your testing automatically for you by running commands in the right order. Hint: Use set -e at the top of a bash to make it abort the whole script if any command has an error.
 
 ```sh
 #!/bin/bash
@@ -267,7 +267,7 @@ $PROGRAM $DB f age 9
 ```
 This doesn't allow for multiple connections if you wanted to work with a few files at once for example, e.g.: concatenating one part of a file to another.
 
-###Go research "stack data structure" and write one in your favorite language, then try to do it in C.
+### Go research "stack data structure" and write one in your favorite language, then try to do it in C.
 
 A good link to the theory of "stack data structure": ```https://en.wikibooks.org/wiki/Data_Structures/Stacks_and_Queues ```.
 
