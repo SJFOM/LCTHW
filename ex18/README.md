@@ -1,5 +1,5 @@
-#Extra Credit
-###Get a hex editor and open up ex18, then find this sequence of hex digits that start a function to see if you can find the function in the raw program.
+# Extra Credit
+### Get a hex editor and open up ex18, then find this sequence of hex digits that start a function to see if you can find the function in the raw program.
 
 Running ex18 gives:
 
@@ -36,7 +36,7 @@ In the compiled binary "ex18" (not ex18.c) you can locate these lines. You must 
 
 ```
 
-###Find other random things in your hex editor and change them. Rerun your program and see what happens. Changing strings you find are the easiest things to change.
+### Find other random things in your hex editor and change them. Rerun your program and see what happens. Changing strings you find are the easiest things to change.
 
 By changing some of the hex strings controlling the "USAGE" warning string won't display properly.
 
@@ -62,7 +62,7 @@ to:
 0000f90: 0000 0000 0000 0000 0100 0000 1c00 0000  ................
 ```
 
-###Pass in the wrong function for the compare_cb and see what the C compiler complains about.
+### Pass in the wrong function for the compare_cb and see what the C compiler complains about.
 
 Add a "bad callback" function that doesn't match the compare_cb typedef of (int a, int b):
 
@@ -97,7 +97,7 @@ void test_sorting(int *numbers, int count, compare_cb cmp)
 1 warning generated.
 ```
 
-###Pass in NULL and watch your program seriously bite it. Then run Valgrind and see what that reports.
+### Pass in NULL and watch your program seriously bite it. Then run Valgrind and see what that reports.
 
 Added a call in int main to use ```NULL``` for compare_cb; resulting output is a seg fault:
 
@@ -145,7 +145,7 @@ Valgrind isn't a fan of that:
 
 The jump to the invalid address at 0x0 refers to the ```NULL``` pointer address. Bad permissions error is probably to do with 0x0 being a read only space in memory but the function is attempting to alter it which is a definite no-no.
 
-###Write another sorting algorithm, then change test_sorting so that it takes both an arbitrary sort function and the sort function's callback comparison. Use it to test both of your algorithms.
+### Write another sorting algorithm, then change test_sorting so that it takes both an arbitrary sort function and the sort function's callback comparison. Use it to test both of your algorithms.
 
 Implemented a "Comb Sort" algorithm, see: ``` https://en.wikipedia.org/wiki/Comb_sort ```. 
 
