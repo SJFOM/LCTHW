@@ -195,7 +195,7 @@ void find(int state, const char *search, struct Connection *conn)
 
 	for(i = 0; i < db->MAX_ROWS; i++)
 	{
-		struct Address *cur = db->rows[i];
+		struct Address *cur = &db->rows[i];
 		
 		if((!(strcmp(search,cur->name)) && state) || (!(strcmp(search, cur->email)) && !state)){
 			found = 1;
